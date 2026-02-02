@@ -22,3 +22,16 @@ app.get("/healthz", (req, res) => {
 app.listen(PORT, () => {
   console.log(`🚀 Servidor en puerto ${PORT}`);
 });
+
+app.get("/test-db", async (req, res) => {
+  try {
+    const result = await pool.query("SELECT NOW()");
+    res.json({
+      ok: true,
+      time: result.rows[0]
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ ok: false });
+  }
+});
