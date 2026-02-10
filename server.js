@@ -63,3 +63,15 @@ app.get("/alquileres", async (req, res) => {
 app.listen(PORT, () => {
   console.log(`🚀 Servidor en puerto ${PORT}`);
 });
+// OBTENER ALQUILERES
+app.get("/alquileres", async (req, res) => {
+  try {
+    const result = await pool.query(
+      "SELECT * FROM alquileres ORDER BY id DESC"
+    );
+    res.json(result.rows);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error al obtener alquileres" });
+  }
+});
