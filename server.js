@@ -18,6 +18,8 @@ app.get("/", (req, res) => {
 app.get("/healthz", (req, res) => {
   res.status(200).send("OK");
 });
+
+// 👉 CREAR ALQUILER
 app.post("/alquileres", async (req, res) => {
   try {
     const {
@@ -31,7 +33,7 @@ app.post("/alquileres", async (req, res) => {
     } = req.body;
 
     const result = await pool.query(
-      `INSERT INTO alquileres 
+      `INSERT INTO alquileres
       (tipo, distrito, direccion, piso, precio, condiciones, telefono, fecha)
       VALUES ($1,$2,$3,$4,$5,$6,$7, NOW())
       RETURNING *`,
@@ -39,10 +41,22 @@ app.post("/alquileres", async (req, res) => {
     );
 
     res.status(201).json(result.rows[0]);
-
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Error al guardar alquiler" });
+  }
+});
+
+// 👉 LISTAR ALQUILERES (ESTE FALTABA 🔥)
+app.get("/alquileres", async (req, res) => {
+  try {
+    const result = await pool.query(
+      "SELECT * FROM alquileres ORDER BY id DESC"
+    );
+    res.json(result.rows);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error al obtener alquileres" });
   }
 });
 
