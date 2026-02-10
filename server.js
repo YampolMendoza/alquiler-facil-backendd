@@ -75,3 +75,45 @@ app.get("/alquileres", async (req, res) => {
     res.status(500).json({ error: "Error al obtener alquileres" });
   }
 });
+app.get("/alquileres", async (req, res) => {
+  try {
+    const { distrito, tipo, minPrecio, maxPrecio } = req.query;
+
+    let query = "SELECT * FROM alquileres WHERE 1=1";
+    let values = [];
+    let i = 1;
+
+    if (distrito) {
+      query += ` AND distrito ILIKE $${i}`;
+      values.push(`%${distrito}%`);
+      i++;
+    }
+
+    if (tipo) {
+      query += ` AND tipo = $${i}`;
+      values.push(tipo);
+      i++;
+    }
+
+    if (minPrecio) {
+      query += ` AND precio >= $${i}`;
+      values.push(minPrecio);
+      i++;
+    }
+
+    if (maxPrecio) {
+      query += ` AND precio <= $${i}`;
+      values.push(maxPrecio);
+      i++;
+    }
+
+    query += " ORDER BY id DESC";
+
+    const result = await pool.query(query, values);
+    res.json(result.rows);
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error al buscar alquileres" });
+  }
+});
